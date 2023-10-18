@@ -85,6 +85,7 @@ require('lazy').setup({
           changedelete = { text = '▐' },
           untracked    = { text = '▐' },
         },
+        max_file_length = 50000,
 
         on_attach = function(bufnr)
           local gs = package.loaded.gitsigns
