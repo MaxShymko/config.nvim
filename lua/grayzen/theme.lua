@@ -175,7 +175,7 @@ function theme.highlights(colors)
             -- normal item |hl-Pmenu|
             Pmenu = { fg = colors.fg, bg = colors.float },
             -- selected item |hl-PmenuSel|
-            PmenuSel = { bg = colors.selection },
+            PmenuSel = { bg = colors.light_blue },
             -- scrollbar |hl-PmenuSbar|
             PmenuSbar = { bg = colors.float },
             -- thumb of the scrollbar  |hl-PmenuThumb|
