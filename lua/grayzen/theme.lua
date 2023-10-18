@@ -157,7 +157,7 @@ function theme.highlights(colors)
             -- 'foldcolumn'
             FoldColumn = { fg = colors.blue },
             -- 'incsearch' highlighting; also used for the text replaced with ":s///c"
-            IncSearch = { fg = colors.fg, bg = colors.selection, style = "bold" },
+            IncSearch = { fg = colors.fg, bg = colors.search, style = "bold" },
             -- Line number for ":number" and ":#" commands, and when 'number' or 'relativenumber' option is set.
             LineNr = { fg = colors.gray },
             -- Like LineNr when 'cursorline' or 'relativenumber' is set for the cursor line.
@@ -175,7 +175,7 @@ function theme.highlights(colors)
             -- normal item |hl-Pmenu|
             Pmenu = { fg = colors.fg, bg = colors.float },
             -- selected item |hl-PmenuSel|
-            PmenuSel = { bg = colors.light_blue },
+            PmenuSel = { bg = colors.highlight },
             -- scrollbar |hl-PmenuSbar|
             PmenuSbar = { bg = colors.float },
             -- thumb of the scrollbar  |hl-PmenuThumb|
@@ -187,7 +187,7 @@ function theme.highlights(colors)
             -- Line numbers for quickfix lists
             qfLineNr = { fg = colors.purple },
             -- Last search pattern highlighting (see 'hlsearch').  Also used for similar items that need to stand out.
-            Search = { fg = colors.fg, bg = colors.selection },
+            Search = { fg = colors.fg, bg = colors.search },
             -- Unprintable characters: text displayed differently from what it really is.
             -- But not 'listchars' whitespace. |hl-Whitespace|
             SpecialKey = { fg = colors.dark_blue },
@@ -237,13 +237,13 @@ function theme.highlights(colors)
             -- Screen-line at the cursor, when 'cursorline' is set. Low-priority if foreground (ctermfg OR guifg) is not set.
             CursorLine = { fg = colors.none, bg = colors.active },
             -- Normal mode message in the cmdline
-            NormalMode = { fg = colors.new_light_gray, bg = colors.none, style = "reverse" },
+            NormalMode = { fg = colors.cyan, bg = colors.none, style = "reverse" },
             -- Insert mode message in the cmdline
-            InsertMode = { fg = colors.cyan, bg = colors.none, style = "reverse" },
+            InsertMode = { fg = colors.new_light_gray, bg = colors.none, style = "reverse" },
             -- Replace mode message in the cmdline
-            ReplacelMode = { fg = colors.cyan, bg = colors.none, style = "reverse" },
+            ReplacelMode = { fg = colors.light_red, bg = colors.none, style = "reverse" },
             -- Visual mode message in the cmdline
-            VisualMode = { fg = colors.selection, bg = colors.none, style = "reverse" },
+            VisualMode = { fg = colors.info, bg = colors.none, style = "reverse" },
             -- Command mode message in the cmdline
             CommandMode = { fg = colors.yellow, bg = colors.none, style = "reverse" },
             Warnings = { fg = colors.warn },
@@ -645,16 +645,13 @@ function theme.highlights(colors)
             DiffviewFilePanelSelected = { fg = colors.cyan, style = "bold" },
             DiffviewFolderSign = { fg = colors.gray },
 
+            LeapLabelPrimary = { fg = colors.fg, bg = colors.search, style = "bold" },
         }
 
         return plugins
     end
 
     function theme.load_terminal()
-        -- dark
-        vim.g.terminal_color_0 = colors.float
-        vim.g.terminal_color_8 = colors.selection
-
         -- light
         vim.g.terminal_color_7 = colors.fg
         vim.g.terminal_color_15 = colors.fg_light

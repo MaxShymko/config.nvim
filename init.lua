@@ -208,6 +208,8 @@ require('lazy').setup({
   },
   'mbbill/undotree',
   'tpope/vim-obsession',
+  'tpope/vim-repeat',
+  { 'ggandor/flit.nvim', config = true },
   {
     'ggandor/leap.nvim',
     config = function()

@@ -45,6 +45,6 @@ colors.active = "#F2F3F5"
 colors.float = "#F5F7F8"
 colors.highlight = colors.light_blue
 colors.highlight_dark = "#DFE1E4"
-colors.selection = "#BFDEBA"
+colors.search = "#BFDEBA"
 
 return colors
