@@ -566,6 +566,7 @@ vim.o.cursorline = true
 -- [[ Basic Keymaps ]]
 vim.keymap.set("n", "<C-w>v", ":rightbelow vsplit<CR>", { silent = true })
 vim.keymap.set("n", "<C-w>s", ":rightbelow split<CR>", { silent = true })
+vim.keymap.set("n", "<C-w>n", ":vnew<CR>", { silent = true })
 
 vim.keymap.set("n", "<leader>1", ":tabn 1<CR>", { silent = true })
 vim.keymap.set("n", "<leader>2", ":tabn 2<CR>", { silent = true })
