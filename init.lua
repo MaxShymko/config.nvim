@@ -597,7 +597,13 @@ vim.keymap.set('n', 'j', "v:count == 0 ? 'gj' : 'j'", { expr = true, silent = tr
 
 -- Clear highlighting after search
 vim.keymap.set('n', '<leader>h', function()
-  vim.opt.hlsearch = vim.v.hlsearch == 0
+  if vim.v.hlsearch == 0 then
+    vim.o.hlsearch = true
+  else
+    -- can not use vim.v.hlsearch = false, because next search will not be highlighted
+    -- :noh will disable highlight till next search
+    vim.api.nvim_command(':noh')
+  end
 end, { desc = 'Toggle search highlighting' })
 
 vim.keymap.set('n', '<leader>w', ":w<CR>", { desc = 'Save buf :w' })
