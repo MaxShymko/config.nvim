@@ -564,6 +564,12 @@ vim.o.cursorline = true
 vim.keymap.set("n", "<C-w>v", ":rightbelow vsplit<CR>", { silent = true })
 vim.keymap.set("n", "<C-w>s", ":rightbelow split<CR>", { silent = true })
 
+vim.keymap.set("n", "<leader>1", ":tabn 1<CR>", { silent = true })
+vim.keymap.set("n", "<leader>2", ":tabn 2<CR>", { silent = true })
+vim.keymap.set("n", "<leader>3", ":tabn 3<CR>", { silent = true })
+vim.keymap.set("n", "<leader>4", ":tabn 4<CR>", { silent = true })
+vim.keymap.set("n", "<leader>9", ":tablast<CR>", { silent = true })
+
 -- vim.keymap.set("n", "<C-h>", "<C-w>h", { silent = true })
 -- vim.keymap.set("n", "<C-j>", "<C-w>j", { silent = true })
 -- vim.keymap.set("n", "<C-k>", "<C-w>k", { silent = true })
@@ -802,7 +808,7 @@ vim.keymap.set('n', '<leader>tc', ':tabclose<CR>', { silent = true, desc = 'Clos
 
 require("lualine").setup({
   options = {
-    component_separators = '|',
+    component_separators = '│',
     section_separators = '',
     globalstatus = true,
   },
@@ -814,6 +820,26 @@ require("lualine").setup({
         path = 1,
       }
     },
+  },
+  tabline = {
+    lualine_a = {
+      {
+        'tabs',
+        mode = 2,
+        path = 0,
+        show_modified_status = false,
+        max_length = vim.o.columns,
+        tabs_color = {
+          -- Same values as the general color option can be used here.
+          active = 'lualine_tabline_normal',     -- Color for active tab.
+          inactive = 'lualine_tabline_inactive', -- Color for inactive tab.
+        },
+        fmt = function(name)
+          vim.o.showtabline = 1
+          return name
+        end
+      }
+    }
   },
 })
 
