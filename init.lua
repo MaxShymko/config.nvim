@@ -54,9 +54,12 @@ require('lazy').setup({
             --   end
             -- }
           });
-          vim.keymap.set('n', '<leader>gg', ':Neogit<CR>', { silent = true, desc = 'Open Neogit' })
-          vim.keymap.set('n', '<leader>gd', ':DiffviewOpen<CR>', { silent = true, desc = 'Open Diffview' })
-          vim.keymap.set('n', '<leader>gf', ':DiffviewFileHistory % --no-merges --follow<CR>',
+          vim.keymap.set('n', '<leader>gg', ':$tabnew <bar> tabclose <bar> Neogit<CR>',
+            { silent = true, desc = 'Open Neogit' })
+          vim.keymap.set('n', '<leader>gd', ':$tabnew <bar> tabclose <bar> DiffviewOpen<CR>',
+            { silent = true, desc = 'Open Diffview' })
+          vim.keymap.set('n', '<leader>gf',
+            ':$tabnew <bar> tabclose <bar> DiffviewFileHistory % --no-merges --follow<CR>',
             { silent = true, desc = 'Open File History' })
 
           -- local diffview_augroup = vim.api.nvim_create_augroup("User", { clear = true })
@@ -379,7 +382,11 @@ local on_attach = function(_, bufnr)
   nmap('<leader>sa', vim.lsp.buf.code_action, 'Code Action')
 
   nmap('<leader>sd', vim.lsp.buf.definition, 'Goto Definition')
-  nmap('<leader>sr', require('telescope.builtin').lsp_references, 'Goto References')
+  nmap('<leader>sr', function()
+    require('telescope.builtin').lsp_references({
+      show_line = false
+    })
+  end, 'Goto References')
   nmap('<leader>si', require('telescope.builtin').lsp_implementations, 'Goto Implementation')
   nmap('<leader>sD', vim.lsp.buf.type_definition, 'Type Definition')
 
@@ -450,20 +457,20 @@ cmp.setup {
       behavior = cmp.ConfirmBehavior.Replace,
       select = true,
     },
-    -- ['<Tab>'] = cmp.mapping(function(fallback)
-    --   if cmp.visible() then
-    --     cmp.select_next_item()
-    --   else
-    --     fallback()
-    --   end
-    -- end, { 'i', 's' }),
-    -- ['<S-Tab>'] = cmp.mapping(function(fallback)
-    --   if cmp.visible() then
-    --     cmp.select_prev_item()
-    --   else
-    --     fallback()
-    --   end
-    -- end, { 'i', 's' }),
+    ['<Tab>'] = cmp.mapping(function(fallback)
+      if cmp.visible() then
+        cmp.select_next_item()
+      else
+        fallback()
+      end
+    end, { 'i', 's' }),
+    ['<S-Tab>'] = cmp.mapping(function(fallback)
+      if cmp.visible() then
+        cmp.select_prev_item()
+      else
+        fallback()
+      end
+    end, { 'i', 's' }),
   },
   sources = {
     { name = 'nvim_lsp' },
@@ -574,6 +581,9 @@ vim.keymap.set("n", "<leader>3", ":tabn 3<CR>", { silent = true })
 vim.keymap.set("n", "<leader>4", ":tabn 4<CR>", { silent = true })
 vim.keymap.set("n", "<leader>9", ":tablast<CR>", { silent = true })
 
+vim.keymap.set("n", "gl", "$", { silent = true })
+vim.keymap.set("n", "gh", "^", { silent = true })
+
 -- vim.keymap.set("n", "<C-h>", "<C-w>h", { silent = true })
 -- vim.keymap.set("n", "<C-j>", "<C-w>j", { silent = true })
 -- vim.keymap.set("n", "<C-k>", "<C-w>k", { silent = true })
@@ -585,8 +595,8 @@ vim.keymap.set("n", "<leader>9", ":tablast<CR>", { silent = true })
 -- vim.keymap.set("n", "_", ":horizontal resize +10<CR>", { silent = true })
 -- vim.keymap.set("n", "-", ":horizontal resize -10<CR>", { silent = true })
 
-vim.keymap.set('n', '<leader>ee', ':NvimTreeToggle<CR>', { silent = true })
-vim.keymap.set('n', '<leader>ec', ':NvimTreeFindFile<CR>', { silent = true })
+-- vim.keymap.set('n', '<leader>ee', ':NvimTreeToggle<CR>', { silent = true })
+vim.keymap.set('n', '<leader>e', ':NvimTreeFindFileToggle<CR>', { silent = true })
 
 -- Keymaps for better default experience
 -- See `:help vim.keymap.set()`
@@ -632,7 +642,7 @@ require('telescope').setup {
     },
     layout_strategy = 'vertical',
     layout_config = {
-      vertical = { width = 0.9, height = 0.99 },
+      vertical = { width = 0.8, height = 0.99 },
     },
     -- history = {
     --   path = '~/.local/share/nvim/databases/telescope_history.sqlite3',
@@ -818,13 +828,28 @@ vim.keymap.set('n', '<leader>tc', ':tabclose<CR>', { silent = true, desc = 'Clos
 
 require("lualine").setup({
   options = {
-    component_separators = '│',
+    component_separators = '',
     section_separators = '',
     globalstatus = true,
   },
   sections = {
-    lualine_b = { 'branch', 'diagnostics' },
-    lualine_c = {
+    lualine_a = { 'mode' },
+    lualine_b = { 'branch', 'diff', 'diagnostics' },
+    lualine_c = { 'windows' },
+    lualine_x = { 'encoding', 'fileformat' },
+    lualine_y = { 'progress' },
+    lualine_z = { 'location' }
+  },
+  winbar = {
+    lualine_x = {
+      {
+        'filename',
+        path = 1,
+      },
+    },
+  },
+  inactive_winbar = {
+    lualine_x = {
       {
         'filename',
         path = 1,
@@ -844,9 +869,18 @@ require("lualine").setup({
           active = 'lualine_tabline_normal',     -- Color for active tab.
           inactive = 'lualine_tabline_inactive', -- Color for inactive tab.
         },
-        fmt = function(name)
+        fmt = function(name, context)
+          -- set mode to one, because lualine force it to 2
           vim.o.showtabline = 1
-          return name
+
+          local tab_name = ""
+          for i, v in ipairs(vim.fn.tabpagebuflist(context.tabnr)) do
+            if i > 1 then
+              tab_name = tab_name .. " "
+            end
+            tab_name = tab_name .. vim.fs.basename(vim.fn.bufname(v))
+          end
+          return tab_name
         end
       }
     }

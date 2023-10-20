@@ -6,7 +6,7 @@ M.normal = {
     a = { fg = colors.bg, bg = colors.cyan, gui = "bold" },
     b = { fg = colors.cyan, bg = colors.float },
     c = { fg = colors.fg, bg = colors.float },
-    tabline = { fg = colors.cyan, bg = colors.bg, gui = "bold" }
+    tabline = { fg = colors.cyan, bg = colors.float, gui = "bold" }
 }
 
 M.insert = {

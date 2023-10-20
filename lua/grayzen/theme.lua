@@ -646,6 +646,10 @@ function theme.highlights(colors)
             DiffviewFolderSign = { fg = colors.gray },
 
             LeapLabelPrimary = { fg = colors.fg, bg = colors.search, style = "bold" },
+
+            LuaLineDiffAdd = { fg = colors.diff_add },
+            LuaLineDiffChange = { fg = colors.diff_change },
+            LuaLineDiffDelete = { fg = colors.diff_remove },
         }
 
         return plugins
