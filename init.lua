@@ -836,7 +836,10 @@ require("lualine").setup({
     lualine_a = { 'mode' },
     lualine_b = { 'branch', 'diff', 'diagnostics' },
     lualine_c = { 'windows' },
-    lualine_x = { 'encoding', 'fileformat' },
+    lualine_x = { function()
+      local path_table = vim.fn.split(vim.fn.getcwd(), '/')
+      return path_table[#path_table]
+    end, 'encoding', 'fileformat' },
     lualine_y = { 'progress' },
     lualine_z = { 'location' }
   },
