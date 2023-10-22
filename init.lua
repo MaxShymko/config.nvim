@@ -884,7 +884,12 @@ require("lualine").setup({
       return path_table[#path_table]
     end, 'encoding', 'fileformat' },
     lualine_y = { 'progress' },
-    lualine_z = { 'location' }
+    lualine_z = { function()
+      local line = vim.fn.line('.')
+      local total_lines = vim.fn.line('$')
+      local col = vim.fn.virtcol('.')
+      return string.format('%3d/%d:%-2d', line, total_lines, col)
+    end }
   },
   winbar = {
     lualine_x = {
