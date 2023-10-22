@@ -129,9 +129,9 @@ function theme.highlights(colors)
 
         local editor = {
             -- normal text and background color for floating windows
-            NormalFloat = { fg = colors.fg, bg = colors.active },
+            NormalFloat = { fg = colors.fg, bg = colors.bg },
             -- floating window border
-            FloatBorder = { fg = colors.fg, bg = colors.active },
+            FloatBorder = { fg = colors.gray, bg = colors.bg },
             -- used for the columns set with 'colorcolumn'
             ColorColumn = { fg = colors.none, bg = colors.float },
             -- placeholder characters substituted for concealed text (see 'conceallevel')
