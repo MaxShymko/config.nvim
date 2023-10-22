@@ -556,7 +556,7 @@ vim.o.sidescrolloff = 20
 
 vim.o.spelllang = 'en_us'
 vim.o.spell = true
-vim.o.spellcapcheck = false
+-- vim.o.spellcapcheck = false
 vim.o.spelloptions = 'camel'
 
 vim.o.tabstop = 4
