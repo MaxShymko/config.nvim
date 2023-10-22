@@ -215,8 +215,9 @@ require('lazy').setup({
     config = function()
       require('treesitter-context').setup({
         multiline_threshold = 1,
-        on_attach = function()
+        on_attach = function(bufnr)
           vim.keymap.set("n", "[p", require("treesitter-context").go_to_context, { buffer = bufnr, silent = true })
+          return true
         end
       })
     end,
@@ -880,7 +881,7 @@ require("lualine").setup({
     lualine_b = { 'branch', 'diff', 'diagnostics' },
     lualine_c = { 'windows' },
     lualine_x = { function()
-      local path_table = vim.fn.split(vim.fn.getcwd(), '/')
+      local path_table = vim.fn.split(vim.fn.getcwd() or '', '/')
       return path_table[#path_table]
     end, 'encoding', 'fileformat' },
     lualine_y = { 'progress' },
@@ -920,7 +921,7 @@ require("lualine").setup({
           active = 'lualine_tabline_normal',     -- Color for active tab.
           inactive = 'lualine_tabline_inactive', -- Color for inactive tab.
         },
-        fmt = function(name, context)
+        fmt = function(_, context)
           -- set mode to one, because lualine force it to 2
           vim.o.showtabline = 1
 
@@ -929,7 +930,7 @@ require("lualine").setup({
             if i > 1 then
               tab_name = tab_name .. " "
             end
-            tab_name = tab_name .. vim.fs.basename(vim.fn.bufname(v))
+            tab_name = tab_name .. vim.fs.basename(vim.fn.bufname(v) or '')
           end
           return tab_name
         end
