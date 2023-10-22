@@ -624,7 +624,7 @@ vim.keymap.set('n', '<leader>w', ":w<CR>", { desc = 'Save buf :w' })
 local highlight_group = vim.api.nvim_create_augroup('YankHighlight', { clear = true })
 vim.api.nvim_create_autocmd('TextYankPost', {
   callback = function()
-    vim.highlight.on_yank()
+    vim.highlight.on_yank({ higroup = "Visual" })
   end,
   group = highlight_group,
   pattern = '*',
