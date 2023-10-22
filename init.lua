@@ -53,6 +53,12 @@ require('lazy').setup({
             --     print(vim.api.nvim_get_current_tabpage())
             --   end
             -- }
+            enhanced_diff_hl = true,
+            file_panel = {
+              win_config = {
+                width = 50,
+              },
+            },
           });
           vim.keymap.set('n', '<leader>gg', ':$tabnew <bar> tabclose <bar> Neogit<CR>',
             { silent = true, desc = 'Open Neogit' })
@@ -195,6 +201,26 @@ require('lazy').setup({
       pcall(require('nvim-treesitter.install').update { with_sync = true })
     end,
   },
+  {
+    'Wansmer/treesj',
+    config = function()
+      require('treesj').setup({
+        use_default_keymaps = false,
+      })
+      vim.keymap.set("n", "<leader>m", ":TSJToggle<CR>")
+    end
+  },
+  {
+    'nvim-treesitter/nvim-treesitter-context',
+    config = function()
+      require('treesitter-context').setup({
+        multiline_threshold = 1,
+        on_attach = function()
+          vim.keymap.set("n", "[p", require("treesitter-context").go_to_context, { buffer = bufnr, silent = true })
+        end
+      })
+    end,
+  },
 
   {
     'nvim-tree/nvim-tree.lua',
@@ -209,7 +235,14 @@ require('lazy').setup({
       trigger_events = { "BufLeave" },
     }
   },
-  'mbbill/undotree',
+  {
+    'mbbill/undotree',
+    config = function()
+      vim.keymap.set('n', '<leader>u', vim.cmd.UndotreeToggle)
+      vim.g.undotree_SplitWidth = 50
+      vim.g.undotree_SetFocusWhenToggle = 1
+    end,
+  },
   'tpope/vim-obsession',
   'tpope/vim-repeat',
   { 'ggandor/flit.nvim', config = true },
@@ -262,10 +295,6 @@ require('lazy').setup({
           lint.try_lint()
         end,
       })
-
-      vim.keymap.set("n", "<leader>l", function()
-        lint.try_lint()
-      end, { desc = "Trigger linting for current file" })
     end,
   },
 
@@ -292,14 +321,6 @@ require('lazy').setup({
           timeout_ms = 1000,
         },
       })
-
-      vim.keymap.set({ "n", "v" }, "<leader>mp", function()
-        conform.format({
-          lsp_fallback = true,
-          async = false,
-          timeout_ms = 1000,
-        })
-      end, { desc = "Format file or range (in visual mode)" })
     end,
   },
 
@@ -307,8 +328,9 @@ require('lazy').setup({
     'hrsh7th/nvim-cmp',
     dependencies = {
       -- Snippet Engine & its associated nvim-cmp source
-      -- 'L3MON4D3/LuaSnip',
-      -- 'saadparwaiz1/cmp_luasnip',
+      'L3MON4D3/LuaSnip',
+      'saadparwaiz1/cmp_luasnip',
+      'rafamadriz/friendly-snippets',
 
       -- Adds LSP completion capabilities
       'hrsh7th/cmp-nvim-lsp',
@@ -439,8 +461,16 @@ vim.keymap.set('n', ']d', vim.diagnostic.goto_next)
 -- [[ Configure nvim-cmp ]]
 -- See `:help cmp`
 local cmp = require 'cmp'
+local luasnip = require 'luasnip'
+require('luasnip.loaders.from_vscode').lazy_load()
+luasnip.config.setup {}
 
 cmp.setup {
+  snippet = {
+    expand = function(args)
+      luasnip.lsp_expand(args.body)
+    end,
+  },
   mapping = cmp.mapping.preset.insert {
     ['<C-n>'] = cmp.mapping.select_next_item(),
     ['<C-p>'] = cmp.mapping.select_prev_item(),
@@ -458,21 +488,22 @@ cmp.setup {
       select = true,
     },
     ['<Tab>'] = cmp.mapping(function(fallback)
-      if cmp.visible() then
-        cmp.select_next_item()
+      if luasnip.expand_or_locally_jumpable() then
+        luasnip.expand_or_jump()
       else
         fallback()
       end
     end, { 'i', 's' }),
     ['<S-Tab>'] = cmp.mapping(function(fallback)
-      if cmp.visible() then
-        cmp.select_prev_item()
+      if luasnip.locally_jumpable(-1) then
+        luasnip.jump(-1)
       else
         fallback()
       end
     end, { 'i', 's' }),
   },
   sources = {
+    { name = 'luasnip' },
     { name = 'nvim_lsp' },
     { name = 'path' },
   },
@@ -707,7 +738,19 @@ vim.keymap.set('n', '<leader>fd', require('telescope.builtin').diagnostics, { de
 -- See `:help nvim-treesitter`
 require('nvim-treesitter.configs').setup {
   -- Add languages to be installed here that you want installed for treesitter
-  ensure_installed = { 'c', 'lua', 'python', 'rust', 'tsx', 'typescript', 'javascript', 'help', 'vim', 'graphql' },
+  ensure_installed = {
+    'help',
+    'vim',
+    'c',
+    'lua',
+    'python',
+    'rust',
+    'tsx',
+    'typescript',
+    'javascript',
+    'json',
+    'graphql',
+  },
 
   -- Autoinstall languages that are not installed. Defaults to false (but you can change for yourself!)
   auto_install = false,
