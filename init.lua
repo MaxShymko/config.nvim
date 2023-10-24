@@ -45,14 +45,20 @@ require('lazy').setup({
       {
         "sindrets/diffview.nvim",
         config = function()
+          -- state. if non nil then git history traversal is using, so need to set the line
+          local target_line = nil
+
           require('diffview').setup({
-            -- hooks = {
-            --   view_opened = function(view)
-            --     -- print(vim.inspect(view))
-            --     print(vim.api.nvim_get_current_buf())
-            --     print(vim.api.nvim_get_current_tabpage())
-            --   end
-            -- }
+            hooks = {
+              diff_buf_read = function(_, ctx)
+                if target_line and ctx.symbol == 'b' then
+                  vim.defer_fn(function()
+                    vim.api.nvim_command(':' .. target_line)
+                    target_line = nil
+                  end, 100)
+                end
+              end
+            },
             file_panel = {
               win_config = {
                 width = 50,
@@ -68,17 +74,56 @@ require('lazy').setup({
             { silent = true, desc = 'Open Neogit' })
           vim.keymap.set('n', '<leader>gd', ':$tabnew <bar> tabclose <bar> DiffviewOpen<CR>',
             { silent = true, desc = 'Open Diffview' })
+          vim.keymap.set('n', '<leader>gl', function()
+              local current_file_line = vim.fn.line('.')
+              local current_file_path = vim.fn.expand("%:.")
+              local current_file_rev = nil
+
+              -- if in diff view, then extract commit hash from path
+              if vim.fn.match(current_file_path, '^diffview://') == 0 then
+                local git_path = vim.fn.split(current_file_path, '.git/')[2]
+                if not git_path then
+                  return
+                end
+
+                local list = vim.fn.matchlist(git_path, '\\(\\w\\+\\)/\\(.*\\)')
+                current_file_path = list[3]
+                current_file_rev = list[2]
+
+                -- close current diff view to open a new one
+                vim.api.nvim_command('tabclose')
+              end
+
+              local blame_params = {
+                'git',
+                'blame',
+                '-p',
+                '-L' .. current_file_line .. ',' .. current_file_line,
+                current_file_path
+              }
+              if current_file_rev then
+                blame_params[#blame_params + 1] = current_file_rev
+              end
+              local p_line_blame = vim.fn.system(blame_params)
+              local blame = vim.fn.split(p_line_blame, '\\n')
+              local blame_rev = vim.fn.split(blame[1])[1]
+              local blame_line = vim.fn.split(blame[1])[2]
+              local blame_filename = vim.fn.split(blame[12])[2]
+
+              if blame_rev == "0000000000000000000000000000000000000000" then
+                vim.print('commit not found')
+              else
+                target_line = blame_line
+                vim.api.nvim_command('$tabnew')
+                vim.api.nvim_command('tabclose')
+                vim.api.nvim_command('DiffviewOpen ' .. '--selected-file=' .. blame_filename .. ' ' .. blame_rev .. '^!')
+                vim.api.nvim_command('DiffviewToggleFiles')
+              end
+            end,
+            { desc = 'Open line commit' })
           vim.keymap.set('n', '<leader>gf',
             ':$tabnew <bar> tabclose <bar> DiffviewFileHistory % --no-merges --follow<CR>',
             { silent = true, desc = 'Open File History' })
-
-          -- local diffview_augroup = vim.api.nvim_create_augroup("User", { clear = true })
-          -- vim.api.nvim_create_autocmd("DiffviewViewOpened", {
-          --   group = diffview_augroup,
-          --   callback = function()
-          --     print('diffview_augroup')
-          --   end,
-          -- })
         end
       }
     },
@@ -140,7 +185,10 @@ require('lazy').setup({
         current_line_blame_opts = {
           delay = 200,
         },
-        current_line_blame_formatter = "<author_time:%R>, <author> - <summary>"
+        current_line_blame_formatter = "<author_time:%R>, <author> - <summary>",
+        preview_config = {
+          border = 'rounded',
+        },
       })
     end,
   },
