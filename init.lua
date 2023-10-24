@@ -767,8 +767,8 @@ require('nvim-treesitter.configs').setup {
     'graphql',
   },
 
-  -- Autoinstall languages that are not installed. Defaults to false (but you can change for yourself!)
-  auto_install = false,
+  -- tree-sitter cli should be installed to support true
+  auto_install = true,
 
   highlight = { enable = true },
   indent = { enable = false, disable = { 'python' } },
