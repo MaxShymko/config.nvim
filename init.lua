@@ -53,10 +53,14 @@ require('lazy').setup({
             --     print(vim.api.nvim_get_current_tabpage())
             --   end
             -- }
-            enhanced_diff_hl = true,
             file_panel = {
               win_config = {
                 width = 50,
+              },
+            },
+            view = {
+              merge_tool = {
+                layout = 'diff3_mixed',
               },
             },
           });
