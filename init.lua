@@ -176,8 +176,7 @@ require('lazy').setup({
             { desc = 'Reset hunk' })
           map('n', '<leader>gu', gs.undo_stage_hunk, { desc = 'Undo hunk stage' })
           map('n', '<leader>gp', gs.preview_hunk_inline, { desc = 'Preview hunk' })
-          map('n', '<leader>gbb', gs.toggle_current_line_blame, { desc = 'Toggle blame' })
-          map('n', '<leader>gbf', function() gs.blame_line { full = true } end, { desc = 'Show full balme' })
+          map('n', '<leader>gb', gs.toggle_current_line_blame, { desc = 'Toggle blame' })
 
           -- Text object
           map({ 'o', 'x' }, 'ih', ':<C-U>Gitsigns select_hunk<CR>')
