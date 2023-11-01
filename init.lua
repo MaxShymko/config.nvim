@@ -929,6 +929,9 @@ require("neogit").setup({
   },
   console_timeout = 1000,
   auto_show_console = true,
+  status = {
+    recent_commit_count = 20,
+  },
 })
 
 
