@@ -366,6 +366,7 @@ require('lazy').setup({
           typescriptreact = { "prettierd" },
           graphql = { "prettierd" },
           lua = { "stylua" },
+          scss = { "prettierd" },
         },
         format_on_save = {
           lsp_fallback = true,
