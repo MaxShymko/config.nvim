@@ -416,6 +416,14 @@ require('lazy').setup({
       }
     end,
   },
+
+  {
+    'Asheq/close-buffers.vim',
+    config = function()
+      vim.keymap.set('n', '<leader>bd', ":Bdelete menu<CR>",
+        { desc = 'Bdelete menu lets select which buffers to delete', silent = true })
+    end
+  },
 }, {})
 
 -- [[ LSP ]]
