@@ -486,27 +486,38 @@ end
 -- Ensure the servers above are installed
 local mason_lspconfig = require 'mason-lspconfig'
 
-local servers = {
+local server_configs = {
   tsserver = {},
+  graphql = {
+    filetypes = { "graphql" },
+  },
+  html = {
+    init_options = {
+      provideFormatter = false,
+    }
+  },
+  cssls = {
+    root_dir = require('lspconfig.util').root_pattern(".git") or function() return vim.fn.getcwd() end,
+  },
   lua_ls = {
-    Lua = {
-      workspace = { checkThirdParty = false },
-      telemetry = { enable = false },
-    },
+    settings = {
+      Lua = {
+        workspace = { checkThirdParty = false },
+        telemetry = { enable = false },
+      },
+    }
   },
 }
 mason_lspconfig.setup {
-  ensure_installed = vim.tbl_keys(servers),
+  ensure_installed = vim.tbl_keys(server_configs),
 }
 
 mason_lspconfig.setup_handlers {
   function(server_name)
-    require('lspconfig')[server_name].setup {
-      capabilities = capabilities,
-      on_attach = on_attach,
-      settings = servers[server_name],
-      filetypes = (servers[server_name] or {}).filetypes,
-    }
+    local config = server_configs[server_name] or {}
+    config.capabilities = capabilities
+    config.on_attach = on_attach
+    require('lspconfig')[server_name].setup(config)
   end
 }
 
