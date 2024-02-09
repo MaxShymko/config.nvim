@@ -953,7 +953,7 @@ require('neogit').setup {
   },
 }
 
-vim.keymap.set('n', '<leader>tc', ':tabclose<CR>', { silent = true, desc = 'Close Current Tab' })
+vim.keymap.set('n', '<leader>t', ':tabclose<CR>', { silent = true, desc = 'Close Current Tab' })
 
 require('lualine').setup {
   options = {
