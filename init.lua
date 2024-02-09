@@ -7,7 +7,7 @@ vim.g.maplocalleader = ' '
 -- Install package manager
 --    https://github.com/folke/lazy.nvim
 --    `:help lazy.nvim.txt` for more info
-local lazypath = vim.fn.stdpath('data') .. '/lazy/lazy.nvim'
+local lazypath = vim.fn.stdpath 'data' .. '/lazy/lazy.nvim'
 if not vim.loop.fs_stat(lazypath) then
   vim.fn.system {
     'git',
@@ -20,7 +20,7 @@ if not vim.loop.fs_stat(lazypath) then
 end
 vim.opt.rtp:prepend(lazypath)
 
-require('grayzen').setup();
+require('grayzen').setup()
 
 -- NOTE: Here is where you install your plugins.
 --  You can configure plugins using the `config` key.
@@ -38,17 +38,17 @@ require('lazy').setup({
 
   -- Git related plugins
   {
-    "NeogitOrg/neogit",
+    'NeogitOrg/neogit',
     dependencies = {
-      "nvim-lua/plenary.nvim",         -- required
-      "nvim-telescope/telescope.nvim", -- optional
+      'nvim-lua/plenary.nvim', -- required
+      'nvim-telescope/telescope.nvim', -- optional
       {
-        "sindrets/diffview.nvim",
+        'sindrets/diffview.nvim',
         config = function()
           -- state. if non nil then git history traversal is using, so need to set the line
           local target_line = nil
 
-          require('diffview').setup({
+          require('diffview').setup {
             hooks = {
               diff_buf_read = function(_, ctx)
                 if target_line and ctx.symbol == 'b' then
@@ -57,7 +57,7 @@ require('lazy').setup({
                     target_line = nil
                   end, 100)
                 end
-              end
+              end,
             },
             file_panel = {
               win_config = {
@@ -69,79 +69,79 @@ require('lazy').setup({
                 layout = 'diff3_mixed',
               },
             },
-          });
-          vim.keymap.set('n', '<leader>gg', ':$tabnew <bar> tabclose <bar> Neogit<CR>',
-            { silent = true, desc = 'Open Neogit' })
-          vim.keymap.set('n', '<leader>gd', ':$tabnew <bar> tabclose <bar> DiffviewOpen<CR>',
-            { silent = true, desc = 'Open Diffview' })
+          }
+          vim.keymap.set('n', '<leader>gg', ':$tabnew <bar> tabclose <bar> Neogit<CR>', { silent = true, desc = 'Open Neogit' })
+          vim.keymap.set('n', '<leader>gd', ':$tabnew <bar> tabclose <bar> DiffviewOpen<CR>', { silent = true, desc = 'Open Diffview' })
           vim.keymap.set('n', '<leader>gl', function()
-              local current_file_line = vim.fn.line('.')
-              local current_file_path = vim.fn.expand("%:.")
-              local current_file_rev = nil
+            local current_file_line = vim.fn.line '.'
+            local current_file_path = vim.fn.expand '%:.'
+            local current_file_rev = nil
 
-              -- if in diff view, then extract commit hash from path
-              if vim.fn.match(current_file_path, '^diffview://') == 0 then
-                local git_path = vim.fn.split(current_file_path, '.git/')[2]
-                if not git_path then
-                  return
-                end
-
-                local list = vim.fn.matchlist(git_path, '\\(\\w\\+\\)/\\(.*\\)')
-                current_file_path = list[3]
-                current_file_rev = list[2]
-
-                -- close current diff view to open a new one
-                vim.api.nvim_command('tabclose')
+            -- if in diff view, then extract commit hash from path
+            if vim.fn.match(current_file_path, '^diffview://') == 0 then
+              local git_path = vim.fn.split(current_file_path, '.git/')[2]
+              if not git_path then
+                return
               end
 
-              local blame_params = {
-                'git',
-                'blame',
-                '-p',
-                '-L' .. current_file_line .. ',' .. current_file_line,
-                current_file_path
-              }
-              if current_file_rev then
-                blame_params[#blame_params + 1] = current_file_rev
-              end
-              local p_line_blame = vim.fn.system(blame_params)
-              local blame = vim.fn.split(p_line_blame, '\\n')
-              local blame_rev = vim.fn.split(blame[1])[1]
-              local blame_line = vim.fn.split(blame[1])[2]
-              local blame_filename = vim.fn.split(blame[12])[2]
+              local list = vim.fn.matchlist(git_path, '\\(\\w\\+\\)/\\(.*\\)')
+              current_file_path = list[3]
+              current_file_rev = list[2]
 
-              if blame_rev == "0000000000000000000000000000000000000000" then
-                vim.print('commit not found')
-              else
-                target_line = blame_line
-                vim.api.nvim_command('$tabnew')
-                vim.api.nvim_command('tabclose')
-                vim.api.nvim_command('DiffviewOpen ' .. '--selected-file=' .. blame_filename .. ' ' .. blame_rev .. '^!')
-                vim.api.nvim_command('DiffviewToggleFiles')
-              end
-            end,
-            { desc = 'Open line commit' })
-          vim.keymap.set('n', '<leader>gf',
+              -- close current diff view to open a new one
+              vim.api.nvim_command 'tabclose'
+            end
+
+            local blame_params = {
+              'git',
+              'blame',
+              '-p',
+              '-L' .. current_file_line .. ',' .. current_file_line,
+              current_file_path,
+            }
+            if current_file_rev then
+              blame_params[#blame_params + 1] = current_file_rev
+            end
+            local p_line_blame = vim.fn.system(blame_params)
+            local blame = vim.fn.split(p_line_blame, '\\n')
+            local blame_rev = vim.fn.split(blame[1])[1]
+            local blame_line = vim.fn.split(blame[1])[2]
+            local blame_filename = vim.fn.split(blame[12])[2]
+
+            if blame_rev == '0000000000000000000000000000000000000000' then
+              vim.print 'commit not found'
+            else
+              target_line = blame_line
+              vim.api.nvim_command '$tabnew'
+              vim.api.nvim_command 'tabclose'
+              vim.api.nvim_command('DiffviewOpen ' .. '--selected-file=' .. blame_filename .. ' ' .. blame_rev .. '^!')
+              vim.api.nvim_command 'DiffviewToggleFiles'
+            end
+          end, { desc = 'Open line commit' })
+          vim.keymap.set(
+            'n',
+            '<leader>gf',
             ':$tabnew <bar> tabclose <bar> DiffviewFileHistory % --no-merges --follow<CR>',
-            { silent = true, desc = 'Open File History' })
-        end
-      }
+            { silent = true, desc = 'Open File History' }
+          )
+        end,
+      },
     },
   },
   -- Useful plugin to show you pending keybinds.
-  { 'folke/which-key.nvim',  opts = {} },
+  { 'folke/which-key.nvim', opts = {} },
   {
     -- Adds git related signs to the gutter, as well as utilities for managing changes
     'lewis6991/gitsigns.nvim',
     config = function()
-      require('gitsigns').setup({
+      require('gitsigns').setup {
         signs = {
-          add          = { text = '▐' },
-          change       = { text = '▐' },
-          delete       = { text = '▐' },
-          topdelete    = { text = '▐' },
+          add = { text = '▐' },
+          change = { text = '▐' },
+          delete = { text = '▐' },
+          topdelete = { text = '▐' },
           changedelete = { text = '▐' },
-          untracked    = { text = '▐' },
+          untracked = { text = '▐' },
         },
         max_file_length = 50000,
 
@@ -156,24 +156,34 @@ require('lazy').setup({
 
           -- Navigation
           map('n', ']c', function()
-            if vim.wo.diff then return ']c' end
-            vim.schedule(function() gs.next_hunk() end)
+            if vim.wo.diff then
+              return ']c'
+            end
+            vim.schedule(function()
+              gs.next_hunk()
+            end)
             return '<Ignore>'
           end, { expr = true, desc = 'Jump to next hunk' })
 
           map('n', '[c', function()
-            if vim.wo.diff then return '[c' end
-            vim.schedule(function() gs.prev_hunk() end)
+            if vim.wo.diff then
+              return '[c'
+            end
+            vim.schedule(function()
+              gs.prev_hunk()
+            end)
             return '<Ignore>'
           end, { expr = true, desc = 'Jump to prev hunk' })
 
           -- Actions
           map('n', '<leader>gs', gs.stage_hunk, { desc = 'Stage hunk' })
           map('n', '<leader>gr', gs.reset_hunk, { desc = 'Reset hunk' })
-          map('v', '<leader>gs', function() gs.stage_hunk { vim.fn.line('.'), vim.fn.line('v') } end,
-            { desc = 'Stage hunk' })
-          map('v', '<leader>gr', function() gs.reset_hunk { vim.fn.line('.'), vim.fn.line('v') } end,
-            { desc = 'Reset hunk' })
+          map('v', '<leader>gs', function()
+            gs.stage_hunk { vim.fn.line '.', vim.fn.line 'v' }
+          end, { desc = 'Stage hunk' })
+          map('v', '<leader>gr', function()
+            gs.reset_hunk { vim.fn.line '.', vim.fn.line 'v' }
+          end, { desc = 'Reset hunk' })
           map('n', '<leader>gu', gs.undo_stage_hunk, { desc = 'Undo hunk stage' })
           map('n', '<leader>gp', gs.preview_hunk_inline, { desc = 'Preview hunk' })
           map('n', '<leader>gb', gs.toggle_current_line_blame, { desc = 'Toggle blame' })
@@ -184,11 +194,11 @@ require('lazy').setup({
         current_line_blame_opts = {
           delay = 200,
         },
-        current_line_blame_formatter = "<author_time:%R>, <author> - <summary>",
+        current_line_blame_formatter = '<author_time:%R>, <author> - <summary>',
         preview_config = {
           border = 'rounded',
         },
-      })
+      }
     end,
   },
 
@@ -223,10 +233,10 @@ require('lazy').setup({
       {
         'nvim-telescope/telescope-smart-history.nvim',
         dependencies = {
-          'kkharji/sqlite.lua'
-        }
-      }
-    }
+          'kkharji/sqlite.lua',
+        },
+      },
+    },
   },
 
   -- Fuzzy Finder Algorithm which requires local dependencies to be built.
@@ -255,22 +265,22 @@ require('lazy').setup({
   {
     'Wansmer/treesj',
     config = function()
-      require('treesj').setup({
+      require('treesj').setup {
         use_default_keymaps = false,
-      })
-      vim.keymap.set("n", "<leader>m", ":TSJToggle<CR>")
-    end
+      }
+      vim.keymap.set('n', '<leader>m', ':TSJToggle<CR>')
+    end,
   },
   {
     'nvim-treesitter/nvim-treesitter-context',
     config = function()
-      require('treesitter-context').setup({
+      require('treesitter-context').setup {
         multiline_threshold = 1,
         on_attach = function(bufnr)
-          vim.keymap.set("n", "[p", require("treesitter-context").go_to_context, { buffer = bufnr, silent = true })
+          vim.keymap.set('n', '[p', require('treesitter-context').go_to_context, { buffer = bufnr, silent = true })
           return true
-        end
-      })
+        end,
+      }
     end,
   },
 
@@ -284,8 +294,8 @@ require('lazy').setup({
     'nvim-zh/auto-save.nvim',
     opts = {
       debounce_delay = 0,
-      trigger_events = { "BufLeave" },
-    }
+      trigger_events = { 'BufLeave' },
+    },
   },
   {
     'mbbill/undotree',
@@ -302,7 +312,7 @@ require('lazy').setup({
     'ggandor/leap.nvim',
     config = function()
       require('leap').add_default_mappings()
-    end
+    end,
   },
 
   -- NOTE: This is where your plugins related to LSP can be installed.
@@ -317,7 +327,7 @@ require('lazy').setup({
 
       -- Useful status updates for LSP
       -- NOTE: `opts = {}` is the same as calling `require('fidget').setup({})`
-      { 'j-hui/fidget.nvim',       tag = 'legacy', opts = {} },
+      { 'j-hui/fidget.nvim', tag = 'legacy', opts = {} },
 
       -- Additional lua configuration, makes nvim stuff amazing!
       'folke/neodev.nvim',
@@ -326,22 +336,22 @@ require('lazy').setup({
 
   -- Linting
   {
-    "mfussenegger/nvim-lint",
+    'mfussenegger/nvim-lint',
     lazy = true,
-    event = { "BufReadPre", "BufNewFile" },
+    event = { 'BufReadPre', 'BufNewFile' },
     config = function()
-      local lint = require("lint")
+      local lint = require 'lint'
 
       lint.linters_by_ft = {
-        javascript = { "eslint_d" },
-        typescript = { "eslint_d" },
-        javascriptreact = { "eslint_d" },
-        typescriptreact = { "eslint_d" },
+        javascript = { 'eslint_d' },
+        typescript = { 'eslint_d' },
+        javascriptreact = { 'eslint_d' },
+        typescriptreact = { 'eslint_d' },
       }
 
-      local lint_augroup = vim.api.nvim_create_augroup("lint", { clear = true })
+      local lint_augroup = vim.api.nvim_create_augroup('lint', { clear = true })
 
-      vim.api.nvim_create_autocmd({ "BufEnter", "BufWritePost" }, {
+      vim.api.nvim_create_autocmd({ 'BufEnter', 'BufWritePost' }, {
         group = lint_augroup,
         callback = function()
           lint.try_lint()
@@ -352,28 +362,28 @@ require('lazy').setup({
 
   -- Formatting
   {
-    "stevearc/conform.nvim",
+    'stevearc/conform.nvim',
     lazy = true,
-    event = { "BufReadPre", "BufNewFile" }, -- to disable, comment this out
+    event = { 'BufReadPre', 'BufNewFile' }, -- to disable, comment this out
     config = function()
-      local conform = require("conform")
+      local conform = require 'conform'
 
-      conform.setup({
+      conform.setup {
         formatters_by_ft = {
-          javascript = { "prettierd" },
-          typescript = { "prettierd" },
-          javascriptreact = { "prettierd" },
-          typescriptreact = { "prettierd" },
-          graphql = { "prettierd" },
-          lua = { "stylua" },
-          scss = { "prettierd" },
+          javascript = { 'prettierd' },
+          typescript = { 'prettierd' },
+          javascriptreact = { 'prettierd' },
+          typescriptreact = { 'prettierd' },
+          graphql = { 'prettierd' },
+          lua = { 'stylua' },
+          scss = { 'prettierd' },
         },
         format_on_save = {
           lsp_fallback = true,
           async = false,
           timeout_ms = 1000,
         },
-      })
+      }
     end,
   },
 
@@ -394,8 +404,8 @@ require('lazy').setup({
 
   {
     'windwp/nvim-autopairs',
-    event = "InsertEnter",
-    config = true
+    event = 'InsertEnter',
+    config = true,
   },
   'windwp/nvim-ts-autotag',
 
@@ -405,14 +415,14 @@ require('lazy').setup({
   {
     'alexghergh/nvim-tmux-navigation',
     config = function()
-      require 'nvim-tmux-navigation'.setup {
+      require('nvim-tmux-navigation').setup {
         keybindings = {
-          left = "<C-h>",
-          down = "<C-j>",
-          up = "<C-k>",
-          right = "<C-l>",
-          last_active = "<C-\\>",
-        }
+          left = '<C-h>',
+          down = '<C-j>',
+          up = '<C-k>',
+          right = '<C-l>',
+          last_active = '<C-\\>',
+        },
       }
     end,
   },
@@ -420,9 +430,8 @@ require('lazy').setup({
   {
     'Asheq/close-buffers.vim',
     config = function()
-      vim.keymap.set('n', '<leader>bd', ":Bdelete menu<CR>",
-        { desc = 'Bdelete menu lets select which buffers to delete', silent = true })
-    end
+      vim.keymap.set('n', '<leader>bd', ':Bdelete menu<CR>', { desc = 'Bdelete menu lets select which buffers to delete', silent = true })
+    end,
   },
 }, {})
 
@@ -466,9 +475,9 @@ local on_attach = function(_, bufnr)
 
   nmap('<leader>sd', vim.lsp.buf.definition, 'Goto Definition')
   nmap('<leader>sr', function()
-    require('telescope.builtin').lsp_references({
-      show_line = false
-    })
+    require('telescope.builtin').lsp_references {
+      show_line = false,
+    }
   end, 'Goto References')
   nmap('<leader>si', require('telescope.builtin').lsp_implementations, 'Goto Implementation')
   nmap('<leader>sD', vim.lsp.buf.type_definition, 'Type Definition')
@@ -489,15 +498,17 @@ local mason_lspconfig = require 'mason-lspconfig'
 local server_configs = {
   tsserver = {},
   graphql = {
-    filetypes = { "graphql" },
+    filetypes = { 'graphql' },
   },
   html = {
     init_options = {
       provideFormatter = false,
-    }
+    },
   },
   cssls = {
-    root_dir = require('lspconfig.util').root_pattern(".git") or function() return vim.fn.getcwd() end,
+    root_dir = require('lspconfig.util').root_pattern '.git' or function()
+      return vim.fn.getcwd()
+    end,
   },
   lua_ls = {
     settings = {
@@ -505,7 +516,7 @@ local server_configs = {
         workspace = { checkThirdParty = false },
         telemetry = { enable = false },
       },
-    }
+    },
   },
 }
 mason_lspconfig.setup {
@@ -518,28 +529,28 @@ mason_lspconfig.setup_handlers {
     config.capabilities = capabilities
     config.on_attach = on_attach
     require('lspconfig')[server_name].setup(config)
-  end
+  end,
 }
 
 vim.keymap.set('n', '<leader>d', vim.diagnostic.open_float)
 vim.keymap.set('n', '[d', vim.diagnostic.goto_prev)
 vim.keymap.set('n', ']d', vim.diagnostic.goto_next)
 
-vim.diagnostic.config({
+vim.diagnostic.config {
   float = { border = 'rounded', max_width = 100 },
   virtual_text = {
     format = function(diagnostic)
       local message = diagnostic.message
-      local MAX_LENGTH = 70;
+      local MAX_LENGTH = 70
       if string.len(message) > MAX_LENGTH then
-        return string.sub(message, 0, MAX_LENGTH) .. "…"
+        return string.sub(message, 0, MAX_LENGTH) .. '…'
       end
       return message
-    end
+    end,
   },
-})
-vim.lsp.handlers["textDocument/hover"] = vim.lsp.with(vim.lsp.handlers.hover, { border = "rounded" })
-vim.lsp.handlers["textDocument/signatureHelp"] = vim.lsp.with(vim.lsp.handlers.signature_help, { border = "rounded" })
+}
+vim.lsp.handlers['textDocument/hover'] = vim.lsp.with(vim.lsp.handlers.hover, { border = 'rounded' })
+vim.lsp.handlers['textDocument/signatureHelp'] = vim.lsp.with(vim.lsp.handlers.signature_help, { border = 'rounded' })
 
 -- [[ LSP end ]]
 
@@ -565,7 +576,7 @@ cmp.setup {
       if cmp.visible() then
         cmp.abort()
       else
-        cmp.complete({})
+        cmp.complete {}
       end
     end, { 'i', 's' }),
     ['<C-y>'] = cmp.mapping.confirm {
@@ -605,8 +616,8 @@ cmp.setup {
 cmp.setup.cmdline({ '/', '?' }, {
   mapping = cmp.mapping.preset.cmdline(),
   sources = {
-    { name = 'buffer', max_item_count = 5 }
-  }
+    { name = 'buffer', max_item_count = 5 },
+  },
 })
 
 -- -- Use cmdline & path source for ':' (if you enabled `native_menu`, this won't work anymore).
@@ -687,18 +698,18 @@ vim.o.showmode = false
 vim.o.cursorline = true
 
 -- [[ Basic Keymaps ]]
-vim.keymap.set("n", "<C-w>v", ":rightbelow vsplit<CR>", { silent = true })
-vim.keymap.set("n", "<C-w>s", ":rightbelow split<CR>", { silent = true })
-vim.keymap.set("n", "<C-w>n", ":vnew<CR>", { silent = true })
+vim.keymap.set('n', '<C-w>v', ':rightbelow vsplit<CR>', { silent = true })
+vim.keymap.set('n', '<C-w>s', ':rightbelow split<CR>', { silent = true })
+vim.keymap.set('n', '<C-w>n', ':vnew<CR>', { silent = true })
 
-vim.keymap.set("n", "<leader>1", ":tabn 1<CR>", { silent = true })
-vim.keymap.set("n", "<leader>2", ":tabn 2<CR>", { silent = true })
-vim.keymap.set("n", "<leader>3", ":tabn 3<CR>", { silent = true })
-vim.keymap.set("n", "<leader>4", ":tabn 4<CR>", { silent = true })
-vim.keymap.set("n", "<leader>9", ":tablast<CR>", { silent = true })
+vim.keymap.set('n', '<leader>1', ':tabn 1<CR>', { silent = true })
+vim.keymap.set('n', '<leader>2', ':tabn 2<CR>', { silent = true })
+vim.keymap.set('n', '<leader>3', ':tabn 3<CR>', { silent = true })
+vim.keymap.set('n', '<leader>4', ':tabn 4<CR>', { silent = true })
+vim.keymap.set('n', '<leader>9', ':tablast<CR>', { silent = true })
 
-vim.keymap.set("n", "gl", "$", { silent = true })
-vim.keymap.set("n", "gh", "^", { silent = true })
+vim.keymap.set('n', 'gl', '$', { silent = true })
+vim.keymap.set('n', 'gh', '^', { silent = true })
 
 -- vim.keymap.set("n", "<C-h>", "<C-w>h", { silent = true })
 -- vim.keymap.set("n", "<C-j>", "<C-w>j", { silent = true })
@@ -729,18 +740,18 @@ vim.keymap.set('n', '<leader>h', function()
   else
     -- can not use vim.v.hlsearch = false, because next search will not be highlighted
     -- :noh will disable highlight till next search
-    vim.api.nvim_command(':noh')
+    vim.api.nvim_command ':noh'
   end
 end, { desc = 'Toggle search highlighting' })
 
-vim.keymap.set('n', '<leader>w', ":w<CR>", { desc = 'Save buf :w' })
+vim.keymap.set('n', '<leader>w', ':w<CR>', { desc = 'Save buf :w' })
 
 -- [[ Highlight on yank ]]
 -- See `:help vim.highlight.on_yank()`
 local highlight_group = vim.api.nvim_create_augroup('YankHighlight', { clear = true })
 vim.api.nvim_create_autocmd('TextYankPost', {
   callback = function()
-    vim.highlight.on_yank({ higroup = "Visual" })
+    vim.highlight.on_yank { higroup = 'Visual' }
   end,
   group = highlight_group,
   pattern = '*',
@@ -778,34 +789,33 @@ require('telescope').setup {
       sort_lastused = true,
       mappings = {
         n = {
-          ["d"] = "delete_buffer",
-        }
-      }
-    }
+          ['d'] = 'delete_buffer',
+        },
+      },
+    },
   },
   extensions = {
     live_grep_args = {
       auto_quoting = true,
       mappings = {
         i = {
-          ["<C-k>"] = require("telescope-live-grep-args.actions").quote_prompt(),
-          ["<C-i>"] = require("telescope-live-grep-args.actions").quote_prompt({ postfix =
-          " -g '*.{js,jsx,ts,tsx}' -g '!*spec.*' " }),
+          ['<C-k>'] = require('telescope-live-grep-args.actions').quote_prompt(),
+          ['<C-i>'] = require('telescope-live-grep-args.actions').quote_prompt { postfix = " -g '*.{js,jsx,ts,tsx}' -g '!*spec.*' " },
         },
       },
-    }
+    },
   },
 }
 
 -- Enable telescope fzf native, if installed
 pcall(require('telescope').load_extension, 'fzf')
-require("telescope").load_extension("live_grep_args")
+require('telescope').load_extension 'live_grep_args'
 -- require('telescope').load_extension('smart_history')
 
 -- See `:help telescope.builtin`
 vim.keymap.set('n', '<leader>fo', require('telescope.builtin').oldfiles, { desc = 'Find recently opened files' })
 vim.keymap.set('n', '<leader><Tab>', function()
-  require('telescope.builtin').buffers({ sort_mru = true })
+  require('telescope.builtin').buffers { sort_mru = true }
 end, { desc = 'Find existing buffers' })
 vim.keymap.set('n', '<leader>fc', function()
   -- You can pass additional configuration to telescope to change theme, layout, etc.
@@ -816,14 +826,12 @@ vim.keymap.set('n', '<leader>fc', function()
 end, { desc = 'Fuzzily search in current buffer' })
 
 vim.keymap.set('n', '<leader>ff', require('telescope.builtin').find_files, { desc = 'Find Files' })
-vim.keymap.set('n', '<leader>fh',
-  function()
-    require('telescope.builtin').help_tags()
-  end, { desc = 'Find Help' })
+vim.keymap.set('n', '<leader>fh', function()
+  require('telescope.builtin').help_tags()
+end, { desc = 'Find Help' })
 vim.keymap.set('n', '<leader>fw', require('telescope.builtin').grep_string, { desc = 'Find current Word' })
 -- vim.keymap.set('n', '<leader>fgg', require('telescope.builtin').live_grep, { desc = 'Find by Grep' })
-vim.keymap.set('n', '<leader>fg', require('telescope').extensions.live_grep_args.live_grep_args,
-  { desc = 'Find by Grep' })
+vim.keymap.set('n', '<leader>fg', require('telescope').extensions.live_grep_args.live_grep_args, { desc = 'Find by Grep' })
 vim.keymap.set('n', '<leader>fd', require('telescope.builtin').diagnostics, { desc = 'Find Diagnostics' })
 
 -- [[ Configure Treesitter ]]
@@ -904,12 +912,12 @@ require('nvim-treesitter.configs').setup {
   },
   autotag = {
     enable = true,
-  }
+  },
 }
 
 vim.g.loaded_netrw = 1
 vim.g.loaded_netrwPlugin = 1
-require('nvim-tree').setup({
+require('nvim-tree').setup {
   view = {
     width = 50,
     float = {
@@ -923,35 +931,35 @@ require('nvim-tree').setup({
       },
     },
   },
-})
-require("nvim-web-devicons").setup({
-  color_icons = false
-})
+}
+require('nvim-web-devicons').setup {
+  color_icons = false,
+}
 
 -- require('onenord').setup({ theme = 'light' })
 
 -- require("auto-save").setup()
 
-require("ibl").setup({
+require('ibl').setup {
   indent = {
-    char = "▏",
+    char = '▏',
   },
   whitespace = {
     remove_blankline_trail = true,
   },
   scope = {
-    enabled = false
+    enabled = false,
   },
-})
+}
 
-require("neogit").setup({
+require('neogit').setup {
   integrations = {
     telescope = true,
     diffview = true,
   },
   mappings = {
     status = {
-      ["o"] = "Toggle",
+      ['o'] = 'Toggle',
     },
   },
   console_timeout = 1000,
@@ -959,12 +967,11 @@ require("neogit").setup({
   status = {
     recent_commit_count = 20,
   },
-})
-
+}
 
 vim.keymap.set('n', '<leader>tc', ':tabclose<CR>', { silent = true, desc = 'Close Current Tab' })
 
-require("lualine").setup({
+require('lualine').setup {
   options = {
     component_separators = '',
     section_separators = '',
@@ -974,17 +981,23 @@ require("lualine").setup({
     lualine_a = { 'mode' },
     lualine_b = { 'branch', 'diff', 'diagnostics' },
     lualine_c = { 'windows' },
-    lualine_x = { function()
-      local path_table = vim.fn.split(vim.fn.getcwd() or '', '/')
-      return path_table[#path_table]
-    end, 'encoding', 'fileformat' },
+    lualine_x = {
+      function()
+        local path_table = vim.fn.split(vim.fn.getcwd() or '', '/')
+        return path_table[#path_table]
+      end,
+      'encoding',
+      'fileformat',
+    },
     lualine_y = { 'progress' },
-    lualine_z = { function()
-      local line = vim.fn.line('.')
-      local total_lines = vim.fn.line('$')
-      local col = vim.fn.virtcol('.')
-      return string.format('%3d/%d:%-2d', line, total_lines, col)
-    end }
+    lualine_z = {
+      function()
+        local line = vim.fn.line '.'
+        local total_lines = vim.fn.line '$'
+        local col = vim.fn.virtcol '.'
+        return string.format('%3d/%d:%-2d', line, total_lines, col)
+      end,
+    },
   },
   winbar = {
     lualine_x = {
@@ -999,7 +1012,7 @@ require("lualine").setup({
       {
         'filename',
         path = 1,
-      }
+      },
     },
   },
   tabline = {
@@ -1012,26 +1025,26 @@ require("lualine").setup({
         max_length = vim.o.columns,
         tabs_color = {
           -- Same values as the general color option can be used here.
-          active = 'lualine_tabline_normal',     -- Color for active tab.
+          active = 'lualine_tabline_normal', -- Color for active tab.
           inactive = 'lualine_tabline_inactive', -- Color for inactive tab.
         },
         fmt = function(_, context)
           -- set mode to one, because lualine force it to 2
           vim.o.showtabline = 1
 
-          local tab_name = ""
+          local tab_name = ''
           for i, v in ipairs(vim.fn.tabpagebuflist(context.tabnr)) do
             if i > 1 then
-              tab_name = tab_name .. " "
+              tab_name = tab_name .. ' '
             end
             tab_name = tab_name .. vim.fs.basename(vim.fn.bufname(v) or '')
           end
           return tab_name
-        end
-      }
-    }
+        end,
+      },
+    },
   },
-})
+}
 
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et
