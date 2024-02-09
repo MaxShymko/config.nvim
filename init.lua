@@ -427,6 +427,8 @@ require('lazy').setup({
       vim.keymap.set('n', '<leader>bd', ':Bdelete menu<CR>', { desc = 'Bdelete menu lets select which buffers to delete', silent = true })
     end,
   },
+
+  'tpope/vim-unimpaired',
 }, {})
 
 -- [[ LSP ]]
