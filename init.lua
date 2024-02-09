@@ -230,12 +230,6 @@ require('lazy').setup({
         -- For major updates, this must be adjusted manually.
         version = '^1.0.0',
       },
-      {
-        'nvim-telescope/telescope-smart-history.nvim',
-        dependencies = {
-          'kkharji/sqlite.lua',
-        },
-      },
     },
   },
 
@@ -770,28 +764,19 @@ require('telescope').setup {
   defaults = {
     mappings = {
       i = {
-        ['<C-u>'] = true,
-        ['<C-d>'] = true,
+        ['<C-p>'] = require('telescope.actions').cycle_history_prev,
+        ['<C-n>'] = require('telescope.actions').cycle_history_next,
       },
     },
     layout_strategy = 'vertical',
     layout_config = {
       vertical = { width = 0.8, height = 0.95 },
     },
-    -- history = {
-    --   path = '~/.local/share/nvim/databases/telescope_history.sqlite3',
-    --   limit = 100,
-    -- }
   },
   pickers = {
     buffers = {
       show_all_buffers = true,
       sort_lastused = true,
-      mappings = {
-        n = {
-          ['d'] = 'delete_buffer',
-        },
-      },
     },
   },
   extensions = {
@@ -810,7 +795,6 @@ require('telescope').setup {
 -- Enable telescope fzf native, if installed
 pcall(require('telescope').load_extension, 'fzf')
 require('telescope').load_extension 'live_grep_args'
--- require('telescope').load_extension('smart_history')
 
 -- See `:help telescope.builtin`
 vim.keymap.set('n', '<leader>fo', require('telescope.builtin').oldfiles, { desc = 'Find recently opened files' })
