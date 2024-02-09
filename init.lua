@@ -776,7 +776,7 @@ require('telescope').setup {
     },
     layout_strategy = 'vertical',
     layout_config = {
-      vertical = { width = 0.8, height = 0.99 },
+      vertical = { width = 0.8, height = 0.95 },
     },
     -- history = {
     --   path = '~/.local/share/nvim/databases/telescope_history.sqlite3',
