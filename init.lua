@@ -906,16 +906,6 @@ vim.g.loaded_netrwPlugin = 1
 require('nvim-tree').setup {
   view = {
     width = 50,
-    float = {
-      enable = false,
-      quit_on_focus_loss = true,
-      open_win_config = {
-        width = 200,
-        height = 54,
-        row = 1,
-        col = 6,
-      },
-    },
   },
 }
 require('nvim-web-devicons').setup {
