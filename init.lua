@@ -765,7 +765,7 @@ vim.api.nvim_create_autocmd({ 'FileChangedShellPost' }, {
 require('telescope').setup {
   defaults = {
     mappings = {
-      i = {
+      n = {
         ['<C-p>'] = require('telescope.actions').cycle_history_prev,
         ['<C-n>'] = require('telescope.actions').cycle_history_next,
       },
@@ -787,7 +787,7 @@ require('telescope').setup {
       mappings = {
         i = {
           ['<C-k>'] = require('telescope-live-grep-args.actions').quote_prompt(),
-          ['<C-i>'] = require('telescope-live-grep-args.actions').quote_prompt { postfix = " -g '*.{js,jsx,ts,tsx}' -g '!*spec.*' " },
+          ['<C-i>'] = require('telescope-live-grep-args.actions').quote_prompt { postfix = " -g '**/{*}/**/*.{js,jsx,ts,tsx}' -g '!*_spec.*' -iF " },
         },
       },
     },
