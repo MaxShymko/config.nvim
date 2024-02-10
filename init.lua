@@ -106,7 +106,15 @@ require('lazy').setup({
             local blame = vim.fn.split(p_line_blame, '\\n')
             local blame_rev = vim.fn.split(blame[1])[1]
             local blame_line = vim.fn.split(blame[1])[2]
-            local blame_filename = vim.fn.split(blame[12])[2]
+
+            local blame_filename
+            for _, v in ipairs(blame) do
+              local split = vim.fn.split(v)
+              if split[1] == 'filename' then
+                blame_filename = split[2]
+                break
+              end
+            end
 
             if blame_rev == '0000000000000000000000000000000000000000' then
               vim.print 'commit not found'
