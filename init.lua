@@ -715,6 +715,15 @@ vim.keymap.set('n', '<leader>9', ':tablast<CR>', { silent = true })
 vim.keymap.set('n', 'gl', '$', { silent = true })
 vim.keymap.set('n', 'gh', '^', { silent = true })
 
+-- Do not override yank register when c or x
+-- "_ is blackhole register
+vim.keymap.set('n', 'c', '"_c', { silent = true })
+vim.keymap.set('n', 'C', '"_C', { silent = true })
+vim.keymap.set('n', 'x', '"_x', { silent = true })
+vim.keymap.set('n', 'X', '"_X', { silent = true })
+-- Yank pasted text after paste in visual mode, so paste will not override yank
+vim.keymap.set('x', 'p', 'pgvygv<ESC>', { silent = true })
+
 -- vim.keymap.set("n", "<C-h>", "<C-w>h", { silent = true })
 -- vim.keymap.set("n", "<C-j>", "<C-w>j", { silent = true })
 -- vim.keymap.set("n", "<C-k>", "<C-w>k", { silent = true })
