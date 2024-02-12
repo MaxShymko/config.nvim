@@ -712,8 +712,8 @@ vim.keymap.set('n', '<leader>3', ':tabn 3<CR>', { silent = true })
 vim.keymap.set('n', '<leader>4', ':tabn 4<CR>', { silent = true })
 vim.keymap.set('n', '<leader>9', ':tablast<CR>', { silent = true })
 
-vim.keymap.set('n', 'gl', '$', { silent = true })
-vim.keymap.set('n', 'gh', '^', { silent = true })
+vim.keymap.set({ 'n', 'x' }, 'gl', '$', { silent = true })
+vim.keymap.set({ 'n', 'x' }, 'gh', '^', { silent = true })
 
 -- Do not override yank register when c or x
 -- "_ is blackhole register
