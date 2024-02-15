@@ -703,13 +703,14 @@ vim.o.cursorline = true
 
 -- [[ Basic Keymaps ]]
 vim.keymap.set('n', '<C-w>v', ':rightbelow vsplit<CR>', { silent = true })
-vim.keymap.set('n', '<C-w>s', ':rightbelow split<CR>', { silent = true })
+vim.keymap.set('n', '<C-w>V', ':rightbelow split<CR>', { silent = true })
 vim.keymap.set('n', '<C-w>n', ':vnew<CR>', { silent = true })
 
 vim.keymap.set('n', '<leader>1', ':tabn 1<CR>', { silent = true })
 vim.keymap.set('n', '<leader>2', ':tabn 2<CR>', { silent = true })
 vim.keymap.set('n', '<leader>3', ':tabn 3<CR>', { silent = true })
 vim.keymap.set('n', '<leader>4', ':tabn 4<CR>', { silent = true })
+vim.keymap.set('n', '<leader>5', ':tabn 5<CR>', { silent = true })
 vim.keymap.set('n', '<leader>9', ':tablast<CR>', { silent = true })
 
 vim.keymap.set({ 'n', 'x' }, 'gl', '$', { silent = true })
@@ -724,16 +725,10 @@ vim.keymap.set('n', 'X', '"_X', { silent = true })
 -- Yank pasted text after paste in visual mode, so paste will not override yank
 vim.keymap.set('x', 'p', 'pgvygv<ESC>', { silent = true })
 
--- vim.keymap.set("n", "<C-h>", "<C-w>h", { silent = true })
--- vim.keymap.set("n", "<C-j>", "<C-w>j", { silent = true })
--- vim.keymap.set("n", "<C-k>", "<C-w>k", { silent = true })
--- vim.keymap.set("n", "<C-l>", "<C-w>l", { silent = true })
-
--- not good to map on +,=,_,- it is used vary often in other places
--- vim.keymap.set("n", "<C-Right>", ":vertical resize +10<CR>", { silent = true })
--- vim.keymap.set("n", "=", ":vertical resize -10<CR>", { silent = true })
--- vim.keymap.set("n", "_", ":horizontal resize +10<CR>", { silent = true })
--- vim.keymap.set("n", "-", ":horizontal resize -10<CR>", { silent = true })
+vim.keymap.set('n', '<M-S-l>', ':vertical resize +5<CR>', { silent = true })
+vim.keymap.set('n', '<M-S-h>', ':vertical resize -5<CR>', { silent = true })
+vim.keymap.set('n', '<M-S-k>', ':horizontal resize +5<CR>', { silent = true })
+vim.keymap.set('n', '<M-S-j>', ':horizontal resize -5<CR>', { silent = true })
 
 -- vim.keymap.set('n', '<leader>ee', ':NvimTreeToggle<CR>', { silent = true })
 vim.keymap.set('n', '<leader>e', ':NvimTreeFindFileToggle<CR>', { silent = true })
