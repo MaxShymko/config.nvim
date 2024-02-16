@@ -3,8 +3,8 @@
 -- Author:                  Ryan Mehri
 -- Website:                 https://github.com/rmehri01/onenord.nvim
 
-local config = require("onenord.config")
-local util = require("onenord.util")
+local config = require 'onenord.config'
+local util = require 'onenord.util'
 
 local onenord = {}
 
@@ -14,7 +14,7 @@ function onenord.setup(options)
 end
 
 function onenord.load(exec_autocmd)
-  local colors = require("onenord.colors").load()
+  local colors = require('onenord.colors').load()
 
   util.load(colors, exec_autocmd)
 end
