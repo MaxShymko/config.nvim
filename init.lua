@@ -437,6 +437,69 @@ require('lazy').setup({
   },
 
   'tpope/vim-unimpaired',
+
+  {
+    'RRethy/vim-illuminate',
+    config = function()
+      local illuminate = require 'illuminate'
+      illuminate.configure { delay = 0 }
+
+      local illuminate_enabled_buffers = {}
+
+      local function delete_key_binding(buf)
+        vim.keymap.del('n', 'n', { buffer = buf })
+        vim.keymap.del('n', 'N', { buffer = buf })
+      end
+
+      local illuminate_group = vim.api.nvim_create_augroup('IlluminateBuffers', { clear = true })
+      vim.api.nvim_create_autocmd('BufEnter', {
+        callback = function(ev)
+          if illuminate_enabled_buffers[ev.buf] == nil then
+            illuminate.pause_buf()
+          end
+        end,
+        group = illuminate_group,
+      })
+      vim.api.nvim_create_autocmd('BufDelete', {
+        callback = function(ev)
+          if illuminate_enabled_buffers[ev.buf] ~= nil then
+            delete_key_binding(ev.buf)
+            illuminate_enabled_buffers[ev.buf] = nil
+          end
+        end,
+        group = illuminate_group,
+      })
+
+      vim.keymap.set('n', '<leader>i', function()
+        local buf = vim.fn.bufnr()
+
+        if illuminate_enabled_buffers[buf] == nil then
+          illuminate_enabled_buffers[buf] = true
+          illuminate.resume_buf()
+          illuminate.freeze_buf()
+
+          vim.keymap.set('n', 'n', function()
+            illuminate.goto_next_reference()
+            illuminate.freeze_buf()
+          end, { desc = 'Next illuminate', silent = true, buffer = buf })
+          vim.keymap.set('n', 'N', function()
+            illuminate.goto_prev_reference()
+            illuminate.freeze_buf()
+          end, { desc = 'Prev illuminate', silent = true, buffer = buf })
+        else
+          illuminate_enabled_buffers[buf] = nil
+          illuminate.unfreeze_buf()
+          illuminate.pause_buf()
+          delete_key_binding(buf)
+        end
+      end, { desc = 'Toggle illuminate', silent = true })
+
+      local theme_colors = require 'grayzen.colors'
+      for _, name in ipairs { 'IlluminatedWordText', 'IlluminatedWordRead', 'IlluminatedWordWrite' } do
+        vim.api.nvim_set_hl(0, name, { fg = theme_colors.fg, bg = theme_colors.highlight })
+      end
+    end,
+  },
 }, {})
 
 -- [[ LSP ]]
